@@ -11,6 +11,8 @@ plugins/
   frontend-develop-guidelines/                           # 플러그인 루트
     .claude-plugin/
       plugin.json                                        # 플러그인 메타데이터 (이름, 버전, 키워드, 스킬/에이전트 경로)
+    commands/                                            # 커스텀 커맨드 디렉토리
+      orchestrator.md                                    # 전체 워크플로우 오케스트레이터 (analyst → prd → frontend-guidelines)
     skills/                                              # 스킬 정의 디렉토리
       planner/                                           # 계획 수립 에이전트 (+ references/)
       architecture/                                      # 아키텍처 설계 에이전트
@@ -38,6 +40,12 @@ plugins/
 | A11y | `/a11y` | WAI-ARIA 기반 웹접근성 점검/개선 |
 | Semantic HTML | `/semantic-html` | 시맨틱 태그 사용 점검/개선 |
 | SEO/GEO | `/seo-geo-optimizer` | 검색엔진 + AI 검색 최적화 |
+
+## Commands
+
+| Command | File | Description |
+|---------|------|-------------|
+| Orchestrator | `plugins/frontend-develop-guidelines/commands/orchestrator.md` | analyst → prd → frontend-guidelines 순차 실행 후 통합 리포트 생성 |
 
 ## Agents
 

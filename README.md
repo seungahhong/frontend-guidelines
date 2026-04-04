@@ -27,15 +27,23 @@
 | **Semantic HTML** | `/semantic-html` | React/JSX 코드의 시맨틱 HTML 태그 사용을 점검하고 개선합니다 |
 | **SEO/GEO Optimizer** | `/seo-geo-optimizer` | 전통적 검색엔진과 AI 검색엔진 모두에 대한 최적화를 수행합니다 |
 
+## Commands
+
+스킬과 에이전트를 조합한 상위 레벨 커맨드입니다.
+
+| Command | Description |
+|---------|-------------|
+| **Orchestrator** (`/orchestrator`) | analyst → prd → frontend-guidelines 순차 실행 후 통합 리포트 생성. 새로운 프론트엔드 기능 개발 시 전체 워크플로우를 한 번에 실행합니다 |
+
 ## Agents
 
-스킬을 조합하여 복합적인 작업을 수행하는 서브 에이전트입니다.
+스킬을 조합하여 복합적인 작업을 수행하는 서브 에이전트입니다. 각 에이전트는 독립된 서브에이전트를 spawn하여 스킬별 작업을 분리 실행합니다.
 
 | Agent | File | Description |
 |-------|------|-------------|
-| **Analyst** | `plugins/frontend-develop-guidelines/agents/analyst.md` | grill-me 스킬을 활용하여 요구사항을 체계적으로 분석하고 명세를 도출합니다 |
-| **PRD** | `plugins/frontend-develop-guidelines/agents/prd.md` | planner → architecture → critic 루프를 순환하며 완성도 높은 개발 요구사항 정의서를 작성합니다 |
-| **Frontend Guidelines** | `plugins/frontend-develop-guidelines/agents/frontend-guidelines.md` | 웹접근성, 시맨틱 HTML, SEO/GEO, TDD 스킬을 조합하여 프론트엔드 개발 가이드라인을 제공합니다 |
+| **Analyst** | `agents/analyst.md` | grill-me 스킬을 활용하여 요구사항을 체계적으로 분석하고 명세를 도출합니다 |
+| **PRD** | `agents/prd.md` | planner → architecture → critic 각각을 서브에이전트로 spawn하여 계획 → 설계 → 비평 루프를 순환하며 PRD를 작성합니다 |
+| **Frontend Guidelines** | `agents/frontend-guidelines.md` | a11y, semantic-html, seo-geo, tdd 각 스킬을 서브에이전트로 병렬 spawn하여 프론트엔드 개발 가이드라인을 제공합니다 |
 
 ## Recommended Workflow
 
@@ -57,14 +65,20 @@
 /seo-geo-optimizer #    SEO/GEO 최적화
 ```
 
-### 에이전트 기반 자동화
+### 오케스트레이터로 전체 자동화
 
 ```
-Analyst Agent              # 1. 요구사항 분석 (grill-me 활용)
+/orchestrator      # 아래 전체 파이프라인을 자동 실행
+```
+
+```
+Analyst 서브에이전트           # 1. 요구사항 분석 (grill-me 활용)
     ↓
-PRD Agent                  # 2. PRD 작성 (planner → architecture → critic 루프)
+PRD 서브에이전트               # 2. PRD 작성 (planner → architecture → critic 서브에이전트 루프)
     ↓
-Frontend Guidelines Agent  # 3. 프론트엔드 개발 (a11y + semantic-html + seo-geo + tdd)
+Frontend Guidelines 서브에이전트  # 3. 프론트엔드 개발 (a11y + semantic-html + seo-geo + tdd 병렬 서브에이전트)
+    ↓
+통합 리포트 생성               # 4. 전 단계 결과 통합
 ```
 
 ## Installation
@@ -84,8 +98,10 @@ claude plugin add seungahhong/frontend-guidelines
   marketplace.json                                       # 마켓플레이스 리스팅 정보
 plugins/
   frontend-develop-guidelines/                           # 플러그인 루트
-    .calude-plugin/
+    .claude-plugin/
       plugin.json                                        # 플러그인 메타데이터
+    commands/
+      orchestrator.md                                    # 전체 워크플로우 오케스트레이터
     skills/
       planner/                                           # 계획 수립 (+ references/)
       architecture/                                      # 아키텍처 설계
@@ -97,8 +113,8 @@ plugins/
       seo-geo-optimizer/                                 # SEO/GEO 최적화 (+ references/)
     agents/
       analyst.md                                         # 요구사항 분석 서브 에이전트
-      prd.md                                             # PRD 작성 서브 에이전트
-      frontend-guidelines.md                             # 프론트엔드 가이드라인 서브 에이전트
+      prd.md                                             # PRD 작성 서브 에이전트 (서브에이전트 기반 루프)
+      frontend-guidelines.md                             # 프론트엔드 가이드라인 서브 에이전트 (병렬 실행)
 ```
 
 ## License
